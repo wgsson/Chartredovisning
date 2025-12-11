@@ -1,7 +1,8 @@
 # Chartredovisning
 Just nu fungerar inte anslutningen med MQTT:
 
-<img width="633" height="611" alt="image" src="https://github.com/user-attachments/assets/7fad2c52-a0bc-4afb-b52a-de68df05b235" />
+<img width="630" height="601" alt="image" src="https://github.com/user-attachments/assets/cc27f903-85ae-4e66-9acd-602baf5f01cc" />
+
 
 
 
