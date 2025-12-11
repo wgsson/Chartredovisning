@@ -1,7 +1,12 @@
-const MAX_DATA_POINTS = 50;
+const MEASUREMENT_INTERVAL = 10 * 60 * 1000; // 10 minuter i millisekunder
+const HISTORY_DURATION = 8 * 60 * 60 * 1000; // 8 timmar i millisekunder
 const dataPoints = [];
 const timeLabels = [];
 const colorData = [];
+const timestamps = [];
+
+let lastMeasurementTime = 0;
+let latestHumidity = null;
 
 // Funktion för att bestämma färg baserat på fuktnivå
 function getColor(humidity) {
@@ -20,6 +25,40 @@ function getBorderColor(humidity) {
     }
 }
 
+// Rensa gammal data (äldre än 8 timmar)
+function cleanOldData() {
+    const now = Date.now();
+    const cutoffTime = now - HISTORY_DURATION;
+    
+    while (timestamps.length > 0 && timestamps[0] < cutoffTime) {
+        timestamps.shift();
+        dataPoints.shift();
+        timeLabels.shift();
+        colorData.shift();
+    }
+}
+
+// Lägg till ny mätning
+function addMeasurement(humidity) {
+    const now = Date.now();
+    const timeString = new Date(now).toLocaleTimeString('sv-SE', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+
+    // Lägg till datapunkt
+    timestamps.push(now);
+    dataPoints.push(humidity);
+    timeLabels.push(timeString);
+    colorData.push(getColor(humidity));
+
+    // Rensa gammal data
+    cleanOldData();
+
+    // Uppdatera diagrammet
+    chart.update();
+}
+
 // Skapa diagrammet
 const ctx = document.getElementById('humidityChart').getContext('2d');
 const chart = new Chart(ctx, {
@@ -27,9 +66,9 @@ const chart = new Chart(ctx, {
     data: {
         labels: timeLabels,
         datasets: [{
-            label: 'Luftfuktighet (RH%)',
+            label: 'Optimalt RH (%)',
             data: dataPoints,
-            borderColor: 'rgb(75, 192, 192)',
+            borderColor: '#28a745',
             backgroundColor: 'rgba(75, 192, 192, 0.1)',
             tension: 0.4,
             fill: true,
@@ -54,33 +93,49 @@ const chart = new Chart(ctx, {
                 max: 100,
                 title: {
                     display: true,
-                    text: 'RH%'
+                    text: 'RH%',
+                    font: {
+                        size: 40
+                    }
+                },
+                ticks: {
+                    font: {
+                        size: 14
+                    }
                 }
             },
             x: {
                 title: {
                     display: true,
-                    text: 'Tid'
+                    text: 'Tid (senaste 8 timmarna)',
+                    font: {
+                        size: 40
+                    }
+                },
+                ticks: {
+                    font: {
+                        size: 14
+                    }
                 }
             }
         },
         plugins: {
             legend: {
-                display: true
+                display: true,
+                labels: {
+                    font: {
+                        size: 40
+                    }
+                }
             },
-            annotation: {
-                annotations: {
-                    optimalZone: {
-                        type: 'box',
-                        yMin: 20,
-                        yMax: 50,
-                        backgroundColor: 'rgba(75, 192, 75, 0.1)',
-                        borderColor: 'rgba(75, 192, 75, 0.3)',
-                        borderWidth: 2,
-                        label: {
-                            display: true,
-                            content: 'Optimalt område (20-50%)',
-                            position: 'start'
+            tooltip: {
+                callbacks: {
+                    afterLabel: function(context) {
+                        const value = context.parsed.y;
+                        if (value >= 20 && value <= 50) {
+                            return 'Status: Optimalt';
+                        } else {
+                            return 'Status: Utanför optimalt område';
                         }
                     }
                 }
@@ -127,8 +182,8 @@ client.onMessageArrived = (message) => {
     const humidity = parseFloat(message.payloadString);
     
     if (!isNaN(humidity)) {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString('sv-SE');
+        latestHumidity = humidity;
+        const now = Date.now();
 
         // Uppdatera nuvarande värde med färgkodning
         const valueElement = document.getElementById('currentValue');
@@ -140,43 +195,14 @@ client.onMessageArrived = (message) => {
             valueElement.style.color = '#dc3545'; // Röd
         }
 
-        // Lägg till datapunkt
-        dataPoints.push(humidity);
-        timeLabels.push(timeString);
-        colorData.push(getColor(humidity));
-
-        // Begränsa antal datapunkter
-        if (dataPoints.length > MAX_DATA_POINTS) {
-            dataPoints.shift();
-            timeLabels.shift();
-            colorData.shift();
+        // Lägg till mätning endast var 10:e minut
+        if (now - lastMeasurementTime >= MEASUREMENT_INTERVAL) {
+            addMeasurement(humidity);
+            lastMeasurementTime = now;
+            console.log("Ny mätning sparad: " + humidity + "% vid " + new Date(now).toLocaleTimeString('sv-SE'));
+        } else {
+            const nextMeasurement = new Date(lastMeasurementTime + MEASUREMENT_INTERVAL);
+            console.log("Väntar på nästa mätning vid: " + nextMeasurement.toLocaleTimeString('sv-SE'));
         }
-
-        // Uppdatera diagrammet
-        chart.update();
     }
 };
-
-// Anslut till MQTT med SSL
-console.log("Försöker ansluta till test.mosquitto.org:8081 (WSS)...");
-client.connect({
-    timeout: 10,
-    keepAliveInterval: 30,
-    useSSL: true,
-    onSuccess: () => {
-        console.log("Ansluten till MQTT broker");
-        document.getElementById('status').className = 'status connected';
-        document.getElementById('status').textContent = 'Ansluten till test.mosquitto.org (WSS)';
-        
-        client.subscribe("Gsson/RH");
-        console.log("Prenumererar på Gsson/RH");
-    },
-    onFailure: (error) => {
-        console.error("Anslutning misslyckades:", error);
-        document.getElementById('status').className = 'status disconnected';
-        document.getElementById('status').textContent = 'Anslutning misslyckades: ' + (error.errorMessage || 'Okänt fel');
-        
-        console.log("Tips: Kontrollera att din enhet skickar data till Gsson/RH");
-        console.log("Du kan också testa med en lokal HTTP-server istället för att öppna filen direkt");
-    }
-});
