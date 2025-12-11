@@ -6,7 +6,7 @@ Chart.js används i EpoxMonitor för att visualisera luftfuktighet (RH %) i real
 
 ## För att skapa grafen har vi använt:
 
-* HTML där vi lagt in Canvas-element samt CDN-länk till Chart.js + tid.
+* HTML där vi lagt in Canvas-element (fungerar ungefär som ett ritområde för JavaScript) samt CDN-länk till Chart.js + tid.
 * CSS för layout och utseende för hemsidan och grafen
 * JavaScript-kod som uppdaterar grafen vid nya mätvärden
 
