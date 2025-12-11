@@ -1,7 +1,8 @@
 # Chartredovisning
 Just nu fungerar inte anslutningen med MQTT:
 
-<img width="664" height="552" alt="image" src="https://github.com/user-attachments/assets/dea04064-98b8-45e8-b587-07067ad485ee" />
+<img width="633" height="611" alt="image" src="https://github.com/user-attachments/assets/7fad2c52-a0bc-4afb-b52a-de68df05b235" />
+
 
 
 ## Node-Red
