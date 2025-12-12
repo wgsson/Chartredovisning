@@ -1,123 +1,165 @@
-* {
-    box-sizing: border-box;
+:root{
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --muted: #e6e9ee;
+  --border: #e1e4ea;
+  --text: #212529;
+  --muted-text: #6b7280;
+  --accent: #0b6ef6;      /* subtil blå accent */
+  --good: #00b25a;        /* grön för optimal */
+  --bad: #ff4d4f;         /* röd för utanför */
+  --radius: 12px;
 }
 
-body {
-    font-family: Open Sans, sans-serif;
-    padding: 10px;
-    background-color: #ffffff;
-    margin: 0;
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(180deg, var(--bg), #eef1f6);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  padding:12px;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* App container - mobilfokus */
+.app{
+  max-width:420px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  min-height:100vh;
 }
 
-h1 {
-    color: #6e3131;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 10px;
-    font-size: clamp(24px, 5vw, 54px);
+/* Header */
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  background:var(--panel);
+  border-radius: var(--radius);
+  padding:10px;
+  border:1px solid var(--border);
+  box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{
+  width:44px;height:44px;border-radius:8px;
+  background: linear-gradient(180deg, #ffffff, #f3f6fb);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;color:var(--accent);
+  font-family:"Roboto Mono", monospace;
+  box-shadow: 0 4px 10px rgba(16,24,40,0.06);
+}
+.brand-text .title{font-weight:700;letter-spacing:1px}
+.brand-text .subtitle{font-size:12px;color:var(--muted-text);margin-top:2px}
+
+/* Status */
+.status{
+  padding:6px 10px;border-radius:8px;font-weight:700;font-size:13px;
+  min-width:110px;text-align:center;
+  border:1px solid transparent;
+}
+.status.connected{
+  background: rgba(11,110,246,0.06);
+  color:var(--accent);
+  border-color: rgba(11,110,246,0.12);
+}
+.status.disconnected{
+  background: rgba(255,77,79,0.06);
+  color:var(--bad);
+  border-color: rgba(255,77,79,0.08);
 }
 
-.status {
-    padding: 8px;
-    margin-bottom: 15px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: clamp(12px, 3vw, 16px);
-    text-align: center;
+/* Live card */
+.live-card{
+  background:var(--panel);
+  border-radius: var(--radius);
+  padding:14px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:space-between;
+  border:1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(16,24,40,0.04);
+}
+.live-left{display:flex;flex-direction:column;gap:6px;flex:1}
+.label{font-size:12px;color:var(--muted-text);font-weight:700;letter-spacing:1px}
+.value{
+  font-family:"Roboto Mono", monospace;
+  font-weight:900;
+  font-size:44px;
+  color:var(--text);
+  background: linear-gradient(180deg, rgba(16,24,40,0.01), rgba(16,24,40,0.00));
+  padding:4px 8px;border-radius:8px;
+  display:inline-block;
+  min-width:130px;text-align:center;
+}
+.value .percent{font-size:18px;margin-left:6px;font-weight:700}
+.time{font-size:13px;color:var(--muted-text)}
+
+.live-right{
+  display:flex;flex-direction:column;gap:8px;
+  min-width:106px;align-items:flex-end;
+}
+.info{background:var(--muted);padding:8px;border-radius:8px;text-align:center;border:1px solid var(--border)}
+.info-title{font-size:11px;color:var(--muted-text);font-weight:700}
+.info-value{font-weight:700;margin-top:4px}
+
+/* Chart card - optimerad för HiDPI skärmar */
+.chart-card{
+  background:var(--panel);
+  border-radius: var(--radius);
+  padding:16px;
+  border:1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(16,24,40,0.04);
+  min-height:280px;
+  position: relative;
 }
 
-.status.connected {
-    background-color: #d4edda;
-    color: #155724;
+/* Chart hint */
+.chart-hint{
+  font-size:10px;
+  color:var(--muted-text);
+  text-align:center;
+  margin-bottom:8px;
+  padding:4px 8px;
+  background:rgba(11,110,246,0.04);
+  border-radius:6px;
+  border:1px solid rgba(11,110,246,0.08);
 }
 
-.status.disconnected {
-    background-color: #f8d7da;
-    color: #721c24;
+canvas#humidityChart{
+  width:100% !important;
+  height:240px !important;
+  display:block;
+  border-radius:8px;
+  /* Optimera canvas rendering för skärpa */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+  /* Touch action för bättre swipe */
+  touch-action: pan-y;
 }
 
-.info-panel {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
+/* Footer */
+.footer{text-align:center;color:var(--muted-text);font-size:12px;padding-bottom:8px}
+
+/* Small screens tweaks */
+@media (max-width: 380px){
+  .value{font-size:36px;min-width:110px}
+  .logo{width:40px;height:40px}
+  .chart-card{padding:12px;min-height:240px}
+  canvas#humidityChart{height:220px !important}
+  .chart-hint{font-size:9px;padding:3px 6px}
 }
 
-.current-value-box {
-    background: linear-gradient(135deg, #d7d4d4 100%, #c9bebe84 100%);
-    padding: 15px;
-    border-radius: 8px;
-    color: rgb(255, 255, 255);
-    text-align: center;
-    width: 100%;
-    max-width: 300px;
-}
-
-.current-value-box h2 {
-    margin: 0 0 5px 0;
-    font-size: clamp(20px, 4vw, 30px);
-    opacity: 0.9;
-}
-
-.current-value {
-    font-size: clamp(28px, 6vw, 36px);
-    font-weight: bold;
-    margin: 15px 0;
-}
-
-#humidityChart {
-    border-radius: 8px;
-    padding: 5px;
-    background-color: #fafafa;
-    width: 100%;
-    max-height: 60vh;
-}
-
-canvas {
-    margin-top: clamp(20px, 5vw, 80px);
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-    
-    .current-value-box {
-        max-width: 100%;
-    }
-
-    #humidityChart {
-        padding: 2px;
-    }
-}
-
-@media (max-width: 600px) {
-    body {
-        padding: 5px;
-    }
-    
-    .container {
-        padding: 8px;
-    }
-
-    h1 {
-        margin-bottom: 8px;
-    }
-
-    .status {
-        padding: 6px;
-        margin-bottom: 10px;
-    }
-
-    .current-value-box {
-        padding: 10px;
-    }
+/* Extra small screens */
+@media (max-width: 320px){
+  .value{font-size:32px;min-width:100px}
+  .chart-card{min-height:220px}
+  canvas#humidityChart{height:200px !important}
 }
