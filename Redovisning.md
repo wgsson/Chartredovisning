@@ -95,7 +95,8 @@ En realtidsuppdaterad graf över luftfuktighet (RH %) som visar:
 * Tidsaxel med automatiska datumformat
 * Mjuka linjer och responsiv design
 
-<img width="430" height="401" alt="image" src="https://github.com/user-attachments/assets/8ea80430-67f0-4a70-bbc4-d413ee472f50" />
+<img width="555" height="504" alt="image" src="https://github.com/user-attachments/assets/9a20d3b0-27de-45b8-8874-ce0c7f02ab8a" />
+
 
 
 
