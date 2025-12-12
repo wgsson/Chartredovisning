@@ -4,33 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EpoxMonitor</title>
-    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+    <!-- MQTT -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+
+    <!-- Extern CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <h1>E P O X M O N I T O R</h1>
         <div id="status" class="status disconnected">Ansluter till MQTT...</div>
-        
+
         <div class="info-panel">
             <div class="current-value-box">
-                <h2>Aktuell RH%</h2>
+                <h2>Live RH:</h2>
                 <div class="current-value" id="currentValue">--.--%</div>
-                <div id="currentTime">--:--:--</div>
-            </div>
-            
-            <div class="alert-box">
-                <h2>⚠️ Avvikelser (RH > 50%)</h2>
-                <div id="alertLog">
-                    <div class="no-alerts">Inga avvikelser ännu</div>
-                </div>
+                <div id="currentTime"></div>
             </div>
         </div>
 
         <canvas id="humidityChart"></canvas>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
